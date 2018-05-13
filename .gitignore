@@ -1,1 +1,4 @@
-data-all/
+data/
+.idea/
+__pycache__/
+SemEval2010_task8_all_data.zip
