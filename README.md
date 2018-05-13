@@ -99,4 +99,4 @@ Deep Learning Approach for Relation Extraction Challenge([**SemEval-2010 Task #8
 
 
 ## Reference
-* **Learning local and global contexts using a convolutional recurrent network model for relation classification in biomedical text** (COLING 2014), D Raj et al. [[paper]](http://www.aclweb.org/anthology/K17-1032) [[github]] (https://github.com/desh2608/crnn-relation-classification)
+* **Learning local and global contexts using a convolutional recurrent network model for relation classification in biomedical text** (CoNLL 2017), D Raj et al. [[paper]](http://www.aclweb.org/anthology/K17-1032) [[github]](https://github.com/desh2608/crnn-relation-classification)
