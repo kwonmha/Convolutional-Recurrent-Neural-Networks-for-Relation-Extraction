@@ -10,7 +10,7 @@ Deep Learning Approach for Relation Extraction Challenge([**SemEval-2010 Task #8
 
 | Parameters             | Test Data Accuracy  | F1 score             |
 |------------------------|:-------------------:|:--------------------:|
-| CRNN-Max               | 61%                 | 62.9%                |
+| CRNN-Max               | 73%                 | 74.28%                |
 | CRNN-Att(not uploaded) |                     |                      |
 
 
@@ -52,9 +52,30 @@ Deep Learning Approach for Relation Extraction Challenge([**SemEval-2010 Task #8
 	```
 
 ### Evalutation
-* test data is located in <U>*"SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT"*</U>
+* test data is located in "<U>*SemEval2010_task8_all_data/SemEval2010_task8_testing_keys/TEST_FILE_FULL.TXT*</U>".
+* You must give "**checkpoint_dir**" argument, path of checkpoint(trained neural model) file, like below example.
 
-* not updated
+* **Evaluation Example:**
+	```bash
+	$ python eval.py --checkpoint_dir "runs/1523902663/checkpoints"
+	```
+
+* **Official Evaluation of SemEval 2010 Task #8**
+	1. After evaluation like the example, you can get the "*prediction.txt*" and "*answer.txt*" in "*result*" directory.
+	2. Install <U>[perl](https://www.perl.org/get.html)</U>.
+	3. Move to <U>*SemEval2010_task8_all_data/SemEval2010_task8_scorer-v1.2*</U>.
+        ```bash
+        $ cd SemEval2010_task8_all_data/SemEval2010_task8_scorer-v1.2
+		```
+	4. Check your prediction file format.
+		```bash
+		$ perl semeval2010_task8_format_checker.pl ../../result/prediction.txt
+		```
+	5. Scoring your prediction.
+		```bash
+		$ perl semeval2010_task8_scorer-v1.2.pl ../../result/prediction.txt ../../result/answer.txt
+		```
+	6. The scorer shows the 3 evaluation reuslts for prediction. The official evaluation result, **(9+1)-WAY EVALUATION TAKING DIRECTIONALITY INTO ACCOUNT -- OFFICIAL**, is the last one. See the [README](SemEval2010_task8_all_data/SemEval2010_task8_scorer-v1.2/README.txt) for more details.
 	
 ## SemEval-2010 Task #8
 * Given: a pair of *nominals*
