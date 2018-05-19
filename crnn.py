@@ -5,9 +5,9 @@ import tensorflow as tf
 class CRNN():
 	def __init__(self, layers, max_length, n_classes, vocab_size, embedding_size, f1, f2, n_channels):
 
-		self.input_text = tf.placeholder(tf.int32, shape=[None, max_length])
+		self.input_text = tf.placeholder(tf.int32, shape=[None, max_length], name="input_text")
 		self.labels = tf.placeholder(tf.int32, shape=[None, n_classes])
-		self.dropout_keep_prob = tf.placeholder(tf.float32)
+		self.dropout_keep_prob = tf.placeholder(tf.float32, name='dropout_keep_prob')
 
 		l2_loss = tf.constant(0.0)
 
@@ -43,7 +43,7 @@ class CRNN():
 		self.optimizer = tf.train.AdamOptimizer()
 		self.train = self.optimizer.minimize(self.cost)
 
-		self.predictions = tf.argmax(self.logits, 1)
+		self.predictions = tf.argmax(self.logits, 1, name="predictions")
 		self.accuracy = tf.reduce_mean(tf.cast(tf.equal(self.predictions, tf.argmax(self.labels, 1)), tf.float32))
 
 	@staticmethod
