@@ -3,13 +3,14 @@ import tensorflow as tf
 
 
 class CRNN():
-	def __init__(self, layers, max_length, n_classes, vocab_size, embedding_size, f1, f2, n_channels):
+	def __init__(self, layers, max_length, n_classes, pooling_type, vocab_size, embedding_size, f1, f2, n_channels):
 
 		self.input_text = tf.placeholder(tf.int32, shape=[None, max_length], name="input_text")
 		self.labels = tf.placeholder(tf.int32, shape=[None, n_classes])
 		self.dropout_keep_prob = tf.placeholder(tf.float32, name='dropout_keep_prob')
 
 		l2_loss = tf.constant(0.0)
+		self.pooling_type = pooling_type
 
 		self.W_emb = tf.Variable(tf.random_normal([vocab_size, embedding_size]))
 		self.text_embedded = tf.nn.embedding_lookup(self.W_emb, self.input_text)
@@ -33,11 +34,20 @@ class CRNN():
 		self.conv = tf.nn.conv2d(self.first_pooling, W_conv, strides=[1, 1, 1, 1], padding='VALID')
 		self.conv = tf.nn.relu(tf.nn.bias_add(self.conv, b_conv))
 		#(64, 95, 1, 100)
-		self.max_pooing = tf.nn.max_pool(self.conv, ksize=[1, max_length-f1-f2+2, 1, 1], strides=[1, 1, 1, 1], padding='VALID')
-		self.max_pooing = tf.nn.dropout(self.max_pooing, keep_prob=self.dropout_keep_prob)
-		self.max_pooing = tf.squeeze(self.max_pooing, axis=[1, 2])
 
-		self.logits = tf.layers.dense(self.max_pooing, units=n_classes)
+		if self.pooling_type == 'max':
+			self.max_pooing = tf.nn.max_pool(self.conv, ksize=[1, max_length-f1-f2+2, 1, 1], strides=[1, 1, 1, 1], padding='VALID')
+			self.max_pooing = tf.nn.dropout(self.max_pooing, keep_prob=self.dropout_keep_prob)
+			self.pooing = tf.squeeze(self.max_pooing, axis=[1, 2])
+		elif self.pooling_type == 'att':
+			self.reduced_conv = tf.squeeze(self.conv, axis=2) # (64, 95, 100)
+			W_att = tf.Variable(tf.truncated_normal([n_channels, n_channels]))
+			V_att = tf.Variable(tf.truncated_normal([n_channels]))
+			self.M_att = tf.tanh(tf.einsum('aij, jk->aik', self.reduced_conv, W_att))  # (64, 95, 100)
+			self.att_vec = tf.nn.softmax(tf.einsum('aij, j->ai', self.M_att, V_att))   # (64, 95)
+			self.pooling = tf.einsum('aij, ai->aj', self.reduced_conv, self.att_vec)
+
+		self.logits = tf.layers.dense(self.pooing, units=n_classes)
 
 		self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.labels))
 		self.optimizer = tf.train.AdamOptimizer()
