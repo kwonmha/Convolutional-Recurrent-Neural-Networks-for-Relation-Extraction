@@ -46,6 +46,7 @@ class CRNN():
 			self.M_att = tf.tanh(tf.einsum('aij, jk->aik', self.reduced_conv, W_att))  # (64, 95, 100)
 			self.att_vec = tf.nn.softmax(tf.einsum('aij, j->ai', self.M_att, V_att))   # (64, 95)
 			self.pooling = tf.einsum('aij, ai->aj', self.reduced_conv, self.att_vec)
+			self.pooling = tf.nn.dropout(self.pooling, keep_prob=self.dropout_keep_prob)
 
 		self.logits = tf.layers.dense(self.pooing, units=n_classes)
 
