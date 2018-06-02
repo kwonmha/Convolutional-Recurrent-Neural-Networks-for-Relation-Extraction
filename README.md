@@ -10,8 +10,8 @@ Deep Learning Approach for Relation Extraction Challenge([**SemEval-2010 Task #8
 
 | Parameters             | Test Data Accuracy  | F1 score             |
 |------------------------|:-------------------:|:--------------------:|
-| CRNN-Max               | 73%                 | 74.28%                |
-| CRNN-Att(not uploaded) |                     |                      |
+| CRNN-Max               | 73%                 | 74.28                |
+| CRNN-Att               | 65.95%               | 70.14               |
 
 
 ## Usage
@@ -24,26 +24,43 @@ Deep Learning Approach for Relation Extraction Challenge([**SemEval-2010 Task #8
 
 	```bash
 	optional arguments:
-		-h, --help            show this help message and exit
-		--train_dir TRAIN_DIR
-								Path of train data
-		--dev_sample_percentage DEV_SAMPLE_PERCENTAGE
-								Percentage of the training data to use for validation
-		--max_sentence_length MAX_SENTENCE_LENGTH
-								Max sentence length in train(98)/test(70) data
-								(Default: 100)
-		--dropout_keep_prob DROPOUT_KEEP_PROB
-								Dropout keep probability (Default: 0.5)
-		--batch_size BATCH_SIZE
-								Batch Size (Default: 64)
-		--num_epochs NUM_EPOCHS
-								Number of training epochs (Default: 100)
-		--display_every DISPLAY_EVERY
-								Number of iterations to display training info.
-		--evaluate_every EVALUATE_EVERY
-								Evaluate model on dev set after this many steps
-		--learning_rate LEARNING_RATE
-								Which learning rate to start with. (Default: 1e-3)
+  -h, --help            show this help message and exit
+  --train_dir TRAIN_DIR
+                        Path of train data
+  --dev_sample_percentage DEV_SAMPLE_PERCENTAGE
+                        Percentage of the training data to use for validation
+  --max_sentence_length MAX_SENTENCE_LENGTH
+                        Max sentence length in train(98)/test(70) data
+                        (Default: 100)
+  --word2vec WORD2VEC   Word2vec file with pre-trained embeddings
+  --text_embedding_dim TEXT_EMBEDDING_DIM
+                        Dimensionality of character embedding (Default: 300)
+  --layers LAYERS       Size of rnn output, no (Default: 100
+  --dropout_keep_prob DROPOUT_KEEP_PROB
+                        Dropout keep probability (Default: 0.5)
+  --pooling_type POOLING_TYPE
+                        pooling method, max or att (Default: max)
+  --l2_reg_lambda L2_REG_LAMBDA
+                        L2 regularization lambda (Default: 3.0)
+  --f1 F1               f1 filter size (Default : 2)
+  --f2 F2               f2 filter size (Default : 5)
+  --n_channels N_CHANNELS
+                        the number of channels-output vector size, nc(Default
+                        : 100
+  --batch_size BATCH_SIZE
+                        Batch Size (Default: 64)
+  --num_epochs NUM_EPOCHS
+                        Number of training epochs (Default: 100)
+  --display_every DISPLAY_EVERY
+                        Number of iterations to display training info.
+  --evaluate_every EVALUATE_EVERY
+                        Evaluate model on dev set after this many steps
+  --checkpoint_every CHECKPOINT_EVERY
+                        Save model after this many steps
+  --num_checkpoints NUM_CHECKPOINTS
+                        Number of checkpoints to store
+  --learning_rate LEARNING_RATE
+                        Which learning rate to start with. (Default: 1e-3)
 	```
 
 * **Train Example:**
