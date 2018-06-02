@@ -43,12 +43,12 @@ class CRNN():
 			self.reduced_conv = tf.squeeze(self.conv, axis=2) # (64, 95, 100)
 			W_att = tf.Variable(tf.truncated_normal([n_channels, n_channels]))
 			V_att = tf.Variable(tf.truncated_normal([n_channels]))
-			self.M_att = tf.tanh(tf.einsum('aij, jk->aik', self.reduced_conv, W_att))  # (64, 95, 100)
-			self.att_vec = tf.nn.softmax(tf.einsum('aij, j->ai', self.M_att, V_att))   # (64, 95)
-			self.pooling = tf.einsum('aij, ai->aj', self.reduced_conv, self.att_vec)
+			self.M_att = tf.tanh(tf.einsum('aij,jk->aik', self.reduced_conv, W_att))  # (64, 95, 100)
+			self.att_vec = tf.nn.softmax(tf.einsum('aij,j->ai', self.M_att, V_att))   # (64, 95)
+			self.pooling = tf.einsum('aij,ai->aj', self.reduced_conv, self.att_vec)
 			self.pooling = tf.nn.dropout(self.pooling, keep_prob=self.dropout_keep_prob)
 
-		self.logits = tf.layers.dense(self.pooing, units=n_classes)
+		self.logits = tf.layers.dense(self.pooling, units=n_classes)
 
 		self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.labels))
 		self.optimizer = tf.train.AdamOptimizer()
