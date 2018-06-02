@@ -25,12 +25,13 @@ tf.flags.DEFINE_integer("text_embedding_dim", 300, "Dimensionality of character 
 # tf.flags.DEFINE_integer("position_embedding_dim", 200, "Dimensionality of position embedding (Default: 100)")
 # tf.flags.DEFINE_string("filter_sizes", "2,3,4,5", "Comma-separated filter sizes (Default: 2,3,4,5)")
 # tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (Default: 128)")
-tf.flags.DEFINE_string("layers", "200", "Size of rnn output (Default: 100")
+tf.flags.DEFINE_string("layers", "100", "Size of rnn output, no (Default: 100")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (Default: 0.5)")
+tf.flags.DEFINE_string("pooling_type", "max", "pooling method, max or att (Default: max)")
 tf.flags.DEFINE_float("l2_reg_lambda", 3.0, "L2 regularization lambda (Default: 3.0)")
 tf.flags.DEFINE_integer("f1", 2, "f1 filter size (Default : 2)")
 tf.flags.DEFINE_integer("f2", 5, "f2 filter size (Default : 5)")
-tf.flags.DEFINE_integer("n_channels", 100, "the number of channels-output vector size (Default : 100")
+tf.flags.DEFINE_integer("n_channels", 100, "the number of channels-output vector size, nc(Default : 100")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (Default: 64)")
@@ -103,7 +104,7 @@ def train():
 	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
-		model = CRNN(layers=FLAGS.layers, max_length=FLAGS.max_sentence_length, n_classes=y.shape[1],
+		model = CRNN(layers=FLAGS.layers, max_length=FLAGS.max_sentence_length, n_classes=y.shape[1], pooling_type=FLAGS.pooling_type,
 					 vocab_size=len(text_vocab_processor.vocabulary_), embedding_size=FLAGS.text_embedding_dim,
 					 f1=FLAGS.f1, f2=FLAGS.f2, n_channels=FLAGS.n_channels)
 
@@ -154,6 +155,8 @@ def train():
 
 		batches = data_helpers.batch_iter(list(zip(x_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
 
+		max_f1 = -1
+
 		for step, batch in enumerate(batches):
 			x_batch, y_batch = zip(*batch)
 
@@ -179,10 +182,11 @@ def train():
 				f1 = f1_score(np.argmax(y_dev, axis=1), predictions, average="macro")
 				print("step {}:, loss {}, acc {}, f1 {}\n".format(step, loss, accuracy, f1))
 
-			# Model checkpoint
-			if step % FLAGS.checkpoint_every == 0:
-				path = saver.save(sess, checkpoint_prefix, global_step=step)
-				print("Saved model checkpoint to {}\n".format(path))
+				# Model checkpoint
+				if f1 > max_f1 * 0.99:
+					path = saver.save(sess, checkpoint_prefix, global_step=step)
+					print("Saved model checkpoint to {}\n".format(path))
+					max_f1 = f1
 
 def main(_):
 	train()
